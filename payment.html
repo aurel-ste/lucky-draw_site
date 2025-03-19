@@ -56,6 +56,14 @@
             font-weight: bold;
             color: red;
         }
+        .admin-container {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 2px solid black;
+            border-radius: 10px;
+            width: 80%;
+        }
     </style>
 </head>
 <body>
@@ -78,14 +86,22 @@
             <option value="skrill">Skrill</option>
         </select>
         
-        <button class="button" onclick="confirmPurchase()">Buy Ticket</button>
+        <button class="button" onclick="requestPaymentApproval()">Request Payment Approval</button>
         
         <h3>Final Draw Countdown</h3>
         <p id="countdown"></p>
     </div>
 
+    <div class="admin-container" id="adminPanel" style="display: none;">
+        <h2>Admin Panel - Payment Requests</h2>
+        <ul id="paymentRequests"></ul>
+    </div>
+
     <script>
-        function confirmPurchase() {
+        let isAdmin = false; // Change this to true for admin access
+        let paymentRequests = [];
+
+        function requestPaymentApproval() {
             let quantity = document.getElementById("ticketQuantity").value;
             let paymentMethod = document.getElementById("paymentMethod").value;
             let totalCost = quantity * (quantity <= 5 ? 100 : 150);
@@ -95,22 +111,46 @@
                 return;
             }
 
-            let confirmMsg = `You are buying ${quantity} ticket(s) for Rs ${totalCost} using ${paymentMethod}. Proceed?`;
-            if (confirm(confirmMsg)) {
-                if (paymentMethod === "juice") {
-                    let whatsappMessage = encodeURIComponent(`Hello, I would like to buy ${quantity} ticket(s) for Rs ${totalCost} via Juice.`);
-                    window.location.href = `http://wa.me/23054516025?text=${whatsappMessage}`;
-                } else {
-                    alert("Your purchase has been confirmed!");
-                }
+            let request = `User requested ${quantity} ticket(s) costing Rs ${totalCost} via ${paymentMethod}.`;
+            paymentRequests.push(request);
+            updateAdminPanel();
+            alert("Your payment request has been sent to the admin.");
+        }
+
+        function updateAdminPanel() {
+            let adminPanel = document.getElementById("adminPanel");
+            let paymentList = document.getElementById("paymentRequests");
+            paymentList.innerHTML = "";
+
+            paymentRequests.forEach((request, index) => {
+                let listItem = document.createElement("li");
+                listItem.textContent = request;
+                let approveButton = document.createElement("button");
+                approveButton.textContent = "Approve";
+                approveButton.onclick = () => confirmPurchase(index);
+                listItem.appendChild(approveButton);
+                paymentList.appendChild(listItem);
+            });
+
+            if (isAdmin) {
+                adminPanel.style.display = "block";
             }
+        }
+
+        function confirmPurchase(index) {
+            if (!isAdmin) {
+                alert("Only an admin can confirm the payment.");
+                return;
+            }
+            alert("Payment confirmed for: " + paymentRequests[index]);
+            paymentRequests.splice(index, 1);
+            updateAdminPanel();
         }
         
         function updateTicketPrice() {
             let quantity = document.getElementById("ticketQuantity").value;
             let pricePerTicket = quantity <= 5 ? 100 : 150;
             let totalCost = quantity * pricePerTicket;
-
             document.getElementById("ticketPrice").innerText = `1 Ticket = Rs ${pricePerTicket}`;
             document.getElementById("totalAmount").innerText = `Total: Rs ${totalCost}`;
         }
@@ -139,3 +179,4 @@
     </script>
 </body>
 </html>
+
