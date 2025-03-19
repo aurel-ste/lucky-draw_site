@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: blue;
+            margin-bottom: 10px;
+        }
+        .input-field, .select-field {
+            margin: 10px 0;
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .button {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            background-color: darkblue;
+            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
+        }
+        #countdown {
+            font-size: 20px;
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GOOD LUCK</h1>
+        <h2>Win the Nintendo Switch OLED</h2>
+        <img src="nintendo_switch_oled.jpg" alt="Nintendo Switch OLED" width="300">
+        
+        <h3>Buy Your Ticket</h3>
+        <label for="ticketQuantity">How many tickets do you want to buy?</label>
+        <input type="number" id="ticketQuantity" class="input-field" min="1" value="1">
+        
+        <p id="ticketPrice">1 Ticket = Rs 150</p>
+        <p id="totalAmount">Total: Rs 150</p>
+        
+        <label for="paymentMethod">Select Payment Method:</label>
+        <select id="paymentMethod" class="select-field">
+            <option value="cash">Cash</option>
+            <option value="juice">Juice</option>
+            <option value="skrill">Skrill</option>
+        </select>
+        
+        <button class="button" onclick="confirmPurchase()">Buy Ticket</button>
+        
+        <h3>Final Draw Countdown</h3>
+        <p id="countdown"></p>
+    </div>
+
+    <script>
+        function confirmPurchase() {
+            let quantity = document.getElementById("ticketQuantity").value;
+            let paymentMethod = document.getElementById("paymentMethod").value;
+            let totalCost = quantity * (quantity <= 5 ? 100 : 150);
+
+            if (quantity < 1) {
+                alert("Please select at least 1 ticket.");
+                return;
+            }
+
+            let confirmMsg = `You are buying ${quantity} ticket(s) for Rs ${totalCost} using ${paymentMethod}. Proceed?`;
+            if (confirm(confirmMsg)) {
+                if (paymentMethod === "juice") {
+                    let whatsappMessage = encodeURIComponent(`Hello, I would like to buy ${quantity} ticket(s) for Rs ${totalCost} via Juice.`);
+                    window.location.href = `http://wa.me/23054516025?text=${whatsappMessage}`;
+                } else {
+                    alert("Your purchase has been confirmed!");
+                }
+            }
+        }
+        
+        function updateTicketPrice() {
+            let quantity = document.getElementById("ticketQuantity").value;
+            let pricePerTicket = quantity <= 5 ? 100 : 150;
+            let totalCost = quantity * pricePerTicket;
+
+            document.getElementById("ticketPrice").innerText = `1 Ticket = Rs ${pricePerTicket}`;
+            document.getElementById("totalAmount").innerText = `Total: Rs ${totalCost}`;
+        }
+
+        document.getElementById("ticketQuantity").addEventListener("input", updateTicketPrice);
+
+        function startCountdown(duration) {
+            let countdownElement = document.getElementById("countdown");
+            let timeLeft = duration;
+            let countdownInterval = setInterval(() => {
+                if (timeLeft >= 0) {
+                    let minutes = Math.floor(timeLeft / 60);
+                    let seconds = timeLeft % 60;
+                    countdownElement.innerText = `${minutes}m ${seconds}s`;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownElement.innerText = "Time's up!";
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        window.onload = function () {
+            startCountdown(3600); // 1-hour countdown
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WELCOME TO LUCKY DRAW</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; margin-top: 50px; }
+        h1 { color: blue; }
+        .container { margin-top: 50px; padding: 20px; border: 2px solid black; display: inline-block; }
+        .input-field { display: block; margin: 10px auto; padding: 10px; width: 80%; }
+        .button { padding: 10px 20px; background: blue; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>WELCOME TO LUCKY DRAW</h1>
+    <p>Choose an option to proceed:</p>
+    
+    <button class="button" onclick="showRegisterForm()">Register</button>
+    <button class="button" onclick="showLoginForm()">Login</button>
+    
+    <div id="registerForm" class="container" style="display: none;">
+        <h1>Register</h1>
+        <input type="text" id="registerUsername" class="input-field" placeholder="Enter Username">
+        <input type="password" id="registerPassword" class="input-field" placeholder="Enter Password">
+        <button class="button" onclick="registerUser()">Register</button>
+    </div>
+
+    <div id="loginForm" class="container" style="display: none;">
+        <h1>Login</h1>
+        <input type="text" id="loginUsername" class="input-field" placeholder="Enter Username">
+        <input type="password" id="loginPassword" class="input-field" placeholder="Enter Password">
+        <button class="button" onclick="loginUser()">Login</button>
+    </div>
+
+    <script>
+        let isAuthenticated = false;
+
+        function showRegisterForm() {
+            document.getElementById("registerForm").style.display = "block";
+            document.getElementById("loginForm").style.display = "none";
+        }
+
+        function showLoginForm() {
+            document.getElementById("registerForm").style.display = "none";
+            document.getElementById("loginForm").style.display = "block";
+        }
+
+        function registerUser() {
+            let username = document.getElementById("registerUsername").value;
+            let password = document.getElementById("registerPassword").value;
+
+            if (username && password) {
+                localStorage.setItem("registeredUsername", username);
+                localStorage.setItem("registeredPassword", password);
+                alert("Registration Successful! Now log in.");
+                showLoginForm();
+            } else {
+                alert("Please fill in all fields.");
+            }
+        }
+
+        function loginUser() {
+            let username = document.getElementById("loginUsername").value;
+            let password = document.getElementById("loginPassword").value;
+            let storedUsername = localStorage.getItem("registeredUsername");
+            let storedPassword = localStorage.getItem("registeredPassword");
+
+            if (username === "ADMIN" && password === "Aurelien@$10") {
+                alert("Admin Login Successful! Redirecting to admin panel.");
+                window.location.href = "admin_panel.html";
+            } else if (username === storedUsername && password === storedPassword) {
+                alert("Login Successful! Redirecting to buy ticket page.");
+                window.location.href = "buy_ticket.html";
+            } else {
+                alert("Invalid credentials. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participant Account</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-field {
+            margin: 10px 0;
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .button {
+            background-color: blue;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .button:hover {
+            background-color: darkblue;
+            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
+        }
+        #accountDetails {
+            display: none;
+            margin-top: 20px;
+        }
+        .ticket {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px dashed black;
+            background-color: #fff;
+            border-radius: 10px;
+            display: inline-block;
+            width: 300px;
+        }
+        .ticket h1 {
+            color: green;
+        }
+        .ticket p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .qr-container {
+            margin-top: 20px;
+        }
+        .qr-container img {
+            width: 150px;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h1>Login to Your Account</h1>
+        <input type="text" id="username" class="input-field" placeholder="Username">
+        <input type="password" id="password" class="input-field" placeholder="Password">
+        <button class="button" onclick="loginUser()">Login</button>
+    </div>
+    
+    <div class="container" id="accountDetails">
+        <h1>Welcome, <span id="displayUsername"></span></h1>
+        <div class="ticket">
+            <h1>Lucky Draw Ticket</h1>
+            <p>Participant: <span id="ticketUsername"></span></p>
+            <p>Ticket Number: <span id="ticketNumber"></span></p>
+            <p>Final Draw: 10 April</p>
+            <p>Good Luck!</p>
+            <div class="qr-container">
+                <img src="tiktok.jpg" alt="TikTok QR Code">
+                <p>Scan code, final will be streamed on TikTok</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let participants = [
+            { username: "JohnDoe", password: "12345", ticketNumber: "A001" },
+            { username: "JaneSmith", password: "54321", ticketNumber: "A002" },
+            { username: "AliceJ", password: "alicepass", ticketNumber: "A003" }
+        ];
+
+        function loginUser() {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            
+            let user = participants.find(p => p.username === username && p.password === password);
+            
+            if (user) {
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("accountDetails").style.display = "block";
+                document.getElementById("displayUsername").innerText = user.username;
+                document.getElementById("ticketUsername").innerText = user.username;
+                document.getElementById("ticketNumber").innerText = user.ticketNumber;
+            } else {
+                alert("Invalid username or password");
+            }
+        }
+    </script>
+</body>
+</html>
+
+

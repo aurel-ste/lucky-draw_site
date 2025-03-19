@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: blue;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .button:hover {
+            background-color: darkgreen;
+            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
+        }
+        .search-bar, .add-participant {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel</h1>
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search by Name or Ticket Number" onkeyup="searchParticipants()">
+        <div class="add-participant">
+            <input type="text" id="newName" placeholder="Enter Name">
+            <button class="button" onclick="addParticipant()">Add Participant</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Participant Name</th>
+                    <th>Ticket Number</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="participantTable">
+                <!-- Participants will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        let participants = JSON.parse(localStorage.getItem("participants")) || [
+            { name: "John Doe", ticketNumber: "A001", status: "Pending" },
+            { name: "Jane Smith", ticketNumber: "A002", status: "Pending" },
+            { name: "Alice Johnson", ticketNumber: "A003", status: "Pending" }
+        ];
+
+        function generateTicketNumber() {
+            return "T" + Math.floor(1000 + Math.random() * 9000);
+        }
+
+        function loadParticipants() {
+            let tableBody = document.getElementById("participantTable");
+            tableBody.innerHTML = "";
+            participants.forEach((participant, index) => {
+                let row = `<tr>
+                    <td>${participant.name}</td>
+                    <td>${participant.ticketNumber}</td>
+                    <td id="status-${index}">${participant.status}</td>
+                    <td>
+                        <button class="button" onclick="confirmPayment(${index})">Confirm Payment</button>
+                        <button class="button" onclick="removeParticipant(${index})">Remove</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+            localStorage.setItem("participants", JSON.stringify(participants));
+        }
+
+        function confirmPayment(index) {
+            participants[index].status = "Paid";
+            document.getElementById(`status-${index}`).innerText = "Paid";
+            alert(`${participants[index].name}'s payment confirmed. Ticket is now valid.`);
+            localStorage.setItem("participants", JSON.stringify(participants));
+            window.location.href = "admin_panel.html"; // Redirect participant to admin panel
+        }
+
+        function addParticipant() {
+            let name = document.getElementById("newName").value;
+            let ticketNumber = generateTicketNumber();
+            if (name) {
+                participants.push({ name, ticketNumber, status: "Pending" });
+                loadParticipants();
+                document.getElementById("newName").value = "";
+            } else {
+                alert("Please enter a name.");
+            }
+        }
+
+        function removeParticipant(index) {
+            if (confirm("Are you sure you want to remove this participant?")) {
+                participants.splice(index, 1);
+                loadParticipants();
+            }
+        }
+
+        function searchParticipants() {
+            let searchValue = document.getElementById("searchInput").value.toLowerCase();
+            let filteredParticipants = participants.filter(p =>
+                p.name.toLowerCase().includes(searchValue) || p.ticketNumber.toLowerCase().includes(searchValue)
+            );
+            let tableBody = document.getElementById("participantTable");
+            tableBody.innerHTML = "";
+            filteredParticipants.forEach((participant, index) => {
+                let row = `<tr>
+                    <td>${participant.name}</td>
+                    <td>${participant.ticketNumber}</td>
+                    <td>${participant.status}</td>
+                    <td>
+                        <button class="button" onclick="confirmPayment(${index})">Confirm Payment</button>
+                        <button class="button" onclick="removeParticipant(${index})">Remove</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        window.onload = loadParticipants;
+    </script>
+</body>
+</html>
