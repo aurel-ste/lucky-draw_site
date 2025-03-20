@@ -159,7 +159,43 @@
             });
         }
 
-        window.onload = loadParticipants;
+        function loadPaymentRequests() {
+            let tableBody = document.getElementById("paymentRequests");
+            tableBody.innerHTML = "";
+
+            let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
+            paymentRequests.forEach((request, index) => {
+                let row = `<tr>
+                    <td>${request.name}</td>
+                    <td>${request.ticketNumber}</td>
+                    <td id="status-${index}">${request.status}</td>
+                    <td>
+                        <button class="button" onclick="confirmPayment(${index})">Confirm Payment</button>
+                        <button class="button" onclick="removeRequest(${index})">Remove</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function confirmPayment(index) {
+            let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
+            paymentRequests[index].status = "Paid";
+            localStorage.setItem("paymentRequests", JSON.stringify(paymentRequests));
+            loadPaymentRequests();
+            alert(`${paymentRequests[index].name}'s payment confirmed.`);
+        }
+
+        function removeRequest(index) {
+            if (confirm("Are you sure you want to remove this request?")) {
+                let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
+                paymentRequests.splice(index, 1);
+                localStorage.setItem("paymentRequests", JSON.stringify(paymentRequests));
+                loadPaymentRequests();
+            }
+        }
+
+        window.onload = loadPaymentRequests;
     </script>
 </body>
 </html>
