@@ -3,30 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment</title>
+    <title>Payment Page</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
+            background-color: #f4f4f4;
+            padding: 20px;
         }
         .container {
-            background-color: white;
+            background: white;
             padding: 20px;
-            border: 2px solid black;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: blue;
-            margin-bottom: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
         }
         .input-field, .select-field {
             margin: 10px 0;
@@ -40,42 +30,21 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 50px;
+            border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
-            margin: 10px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
         .button:hover {
             background-color: darkblue;
-            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
-        }
-        #countdown {
-            font-size: 20px;
-            font-weight: bold;
-            color: red;
-        }
-        .admin-container {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #fff;
-            border: 2px solid black;
-            border-radius: 10px;
-            width: 80%;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>GOOD LUCK</h1>
-        <h2>Win the Nintendo Switch OLED</h2>
-        <img src="nintendo_switch_oled.jpg" alt="Nintendo Switch OLED" width="300">
-        
-        <h3>Buy Your Ticket</h3>
+        <h1>Buy Your Ticket</h1>
         <label for="ticketQuantity">How many tickets do you want to buy?</label>
-        <input type="number" id="ticketQuantity" class="input-field" min="1" value="1">
-        
+        <input type="number" id="ticketQuantity" class="input-field" min="1" value="1" onchange="updateTicketPrice()">
         <p id="ticketPrice">1 Ticket = Rs 150</p>
         <p id="totalAmount">Total: Rs 150</p>
         
@@ -87,66 +56,35 @@
         </select>
         
         <button class="button" onclick="requestPaymentApproval()">Request Payment Approval</button>
-        
-        <h3>Final Draw Countdown</h3>
-        <p id="countdown"></p>
-    </div>
-
-    <div class="admin-container" id="adminPanel" style="display: none;">
-        <h2>Admin Panel - Payment Requests</h2>
-        <ul id="paymentRequests"></ul>
     </div>
 
     <script>
-        let isAdmin = false; // Change this to true for admin access
-        let paymentRequests = [];
-
         function requestPaymentApproval() {
             let quantity = document.getElementById("ticketQuantity").value;
             let paymentMethod = document.getElementById("paymentMethod").value;
             let totalCost = quantity * (quantity <= 5 ? 100 : 150);
-
+            
             if (quantity < 1) {
                 alert("Please select at least 1 ticket.");
                 return;
             }
 
-            let request = `User requested ${quantity} ticket(s) costing Rs ${totalCost} via ${paymentMethod}.`;
-            paymentRequests.push(request);
-            updateAdminPanel();
-            alert("Your payment request has been sent to the admin.");
+            let ticketNumber = "T" + Math.floor(1000 + Math.random() * 9000);
+            let paymentRequest = {
+                name: "User",
+                ticketNumber: ticketNumber,
+                status: "Pending",
+                totalCost: totalCost,
+                paymentMethod: paymentMethod
+            };
+
+            let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
+            paymentRequests.push(paymentRequest);
+            localStorage.setItem("paymentRequests", JSON.stringify(paymentRequests));
+
+            alert(`Your payment request for ${quantity} ticket(s) costing Rs ${totalCost} is pending admin approval.`);
         }
 
-        function updateAdminPanel() {
-            let adminPanel = document.getElementById("adminPanel");
-            let paymentList = document.getElementById("paymentRequests");
-            paymentList.innerHTML = "";
-
-            paymentRequests.forEach((request, index) => {
-                let listItem = document.createElement("li");
-                listItem.textContent = request;
-                let approveButton = document.createElement("button");
-                approveButton.textContent = "Approve";
-                approveButton.onclick = () => confirmPurchase(index);
-                listItem.appendChild(approveButton);
-                paymentList.appendChild(listItem);
-            });
-
-            if (isAdmin) {
-                adminPanel.style.display = "block";
-            }
-        }
-
-        function confirmPurchase(index) {
-            if (!isAdmin) {
-                alert("Only an admin can confirm the payment.");
-                return;
-            }
-            alert("Payment confirmed for: " + paymentRequests[index]);
-            paymentRequests.splice(index, 1);
-            updateAdminPanel();
-        }
-        
         function updateTicketPrice() {
             let quantity = document.getElementById("ticketQuantity").value;
             let pricePerTicket = quantity <= 5 ? 100 : 150;
@@ -154,28 +92,6 @@
             document.getElementById("ticketPrice").innerText = `1 Ticket = Rs ${pricePerTicket}`;
             document.getElementById("totalAmount").innerText = `Total: Rs ${totalCost}`;
         }
-
-        document.getElementById("ticketQuantity").addEventListener("input", updateTicketPrice);
-
-        function startCountdown(duration) {
-            let countdownElement = document.getElementById("countdown");
-            let timeLeft = duration;
-            let countdownInterval = setInterval(() => {
-                if (timeLeft >= 0) {
-                    let minutes = Math.floor(timeLeft / 60);
-                    let seconds = timeLeft % 60;
-                    countdownElement.innerText = `${minutes}m ${seconds}s`;
-                } else {
-                    clearInterval(countdownInterval);
-                    countdownElement.innerText = "Time's up!";
-                }
-                timeLeft--;
-            }, 1000);
-        }
-
-        window.onload = function () {
-            startCountdown(3600); // 1-hour countdown
-        };
     </script>
 </body>
 </html>
