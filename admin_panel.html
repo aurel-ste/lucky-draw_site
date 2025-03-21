@@ -147,13 +147,14 @@
         }
 
         function loadPayments() {
-            let payments = JSON.parse(localStorage.getItem("payments")) || [];
+            let payments = JSON.parse(localStorage.getItem("paymentRequests")) || [];
             let paymentTable = document.getElementById("paymentTable");
             paymentTable.innerHTML = "";
+            
             payments.forEach((payment, index) => {
                 let row = `<tr>
                     <td>${payment.user}</td>
-                    <td>$${payment.amount}</td>
+                    <td>Rs ${payment.totalCost}</td>
                     <td>
                         <button class="button" onclick="approvePayment(${index})">Approve</button>
                         <button class="button" onclick="rejectPayment(${index})" style="background:red;">Reject</button>
@@ -164,18 +165,18 @@
         }
 
         function approvePayment(index) {
-            let payments = JSON.parse(localStorage.getItem("payments")) || [];
+            let payments = JSON.parse(localStorage.getItem("paymentRequests")) || [];
             alert(`Payment from ${payments[index].user} approved!`);
-            payments.splice(index, 1);
-            localStorage.setItem("payments", JSON.stringify(payments));
+            payments[index].status = "Approved";  // Mark as approved
+            localStorage.setItem("paymentRequests", JSON.stringify(payments));
             loadPayments();
         }
 
         function rejectPayment(index) {
-            let payments = JSON.parse(localStorage.getItem("payments")) || [];
+            let payments = JSON.parse(localStorage.getItem("paymentRequests")) || [];
             alert(`Payment from ${payments[index].user} rejected.`);
-            payments.splice(index, 1);
-            localStorage.setItem("payments", JSON.stringify(payments));
+            payments[index].status = "Rejected";  // Mark as rejected
+            localStorage.setItem("paymentRequests", JSON.stringify(payments));
             loadPayments();
         }
 
