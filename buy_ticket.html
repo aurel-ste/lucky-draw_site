@@ -58,7 +58,23 @@
         function redirectToPayment() {
             let confirmPurchase = confirm("Are you sure you want to buy a ticket?");
             if (confirmPurchase) {
-                window.location.href = "payment.html";
+                let currentUser = JSON.parse(localStorage.getItem("currentUser")); // Assuming user is logged in
+            if (!currentUser) {
+                alert("You must be logged in to buy a ticket!");
+                return;
+            }
+
+            let payments = JSON.parse(localStorage.getItem("paymentRequests")) || [];
+            payments.push({
+                user: currentUser.username,
+                totalCost: 1000, // Example ticket price
+                status: "Pending"
+            });
+
+            localStorage.setItem("paymentRequests", JSON.stringify(payments));
+
+            alert("Your payment request has been sent!");
+            window.location.href = "payment.html";
             }
         }
     </script>
