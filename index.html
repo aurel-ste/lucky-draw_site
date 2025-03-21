@@ -106,11 +106,17 @@
             let password = document.getElementById("registerPassword").value;
 
             if (username && email && password) {
-                // Store registration info in localStorage (simple example, real-world apps would be more secure)
+                let users = JSON.parse(localStorage.getItem("registeredUsers")) || [];
+
+                users.push({ username, email, password });
+
+                localStorage.setItem("registeredUsers", JSON.stringify(users));
+
                 localStorage.setItem('userLoggedIn', true);
                 localStorage.setItem('username', username);
+
                 alert("Registration Successful! Redirecting to Buy Ticket Page...");
-                window.location.href = "buy_ticket.html"; // Redirect to buy ticket page after registration
+                window.location.href = "buy_ticket.html";
             } else {
                 alert("Please fill in all fields.");
             }
@@ -119,19 +125,25 @@
         function loginUser() {
             let username = document.getElementById("loginUsername").value;
             let password = document.getElementById("loginPassword").value;
-            
-            // A simple admin check (this should be handled more securely on the backend in a real-world app)
+
             if (username === "ADMIN" && password === "Aurelien@$10") {
                 alert("Admin Login Successful! Redirecting to Admin Panel...");
                 window.location.href = "admin_panel.html";
                 return;
             } 
 
-            // If login is successful, store login info
-            localStorage.setItem('userLoggedIn', true);
-            localStorage.setItem('username', username);
-            alert("Login Successful! Redirecting to Buy Ticket Page...");
-            window.location.href = "buy_ticket.html"; // Redirect to buy ticket page after login
+            let users = JSON.parse(localStorage.getItem("registeredUsers")) || [];
+
+            let validUser = users.find(user => user.username === username && user.password === password);
+
+            if (validUser) {
+                localStorage.setItem('userLoggedIn', true);
+                localStorage.setItem('username', username);
+                alert("Login Successful! Redirecting to Buy Ticket Page...");
+                window.location.href = "buy_ticket.html";
+            } else {
+                alert("Invalid username or password.");
+            }
         }
     </script>
 </body>
