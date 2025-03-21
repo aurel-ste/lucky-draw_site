@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,58 +7,43 @@
     <title>Participant Account</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-        }
-        .container {
-            background-color: white;
+            background-color: #f4f4f4;
             padding: 20px;
-            border: 2px solid black;
+        }
+        .container, .login-container {
+            background: white;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            position: relative;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            margin: auto;
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         .button {
             background-color: blue;
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 50px;
+            border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
-            margin: 10px;
             width: 100%;
         }
         .button:hover {
             background-color: darkblue;
         }
-        .login-container {
-            background-color: white;
-            padding: 20px;
-            border: 2px solid black;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-        }
-        .login-container input {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border: 1px solid black;
-            border-radius: 5px;
+        h1, h2 {
+            color: blue;
         }
         .ticket-container {
-            display: flex;
-            justify-content: space-around;
             margin-top: 20px;
         }
         .ticket {
@@ -65,116 +51,99 @@
             border: 2px dashed black;
             background-color: #fff;
             border-radius: 10px;
-            width: 300px;
-        }
-        .ticket h2 {
-            color: blue;
+            margin: 10px 0;
         }
         .free-ticket {
             background-color: lightgreen;
-        }
-        .qr-container img {
-            width: 150px;
-            height: auto;
-        }
-        h1 {
-            color: blue;
-        }
-        #displayUsername {
-            color: blue;
-        }
-        .footer {
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .personal-details, .buy-ticket {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            padding: 10px;
-            background-color: blue;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 120px;
-        }
-        .buy-ticket {
-            top: 50px;
-        }
-        .personal-details:hover, .buy-ticket:hover {
-            background-color: darkblue;
-        }
-        .details-popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            border: 2px solid black;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-        .details-popup button {
-            margin-top: 10px;
-            background-color: red;
         }
     </style>
 </head>
 <body>
     <div class="login-container" id="loginContainer">
         <h2>Login</h2>
-        <input type="text" id="username" placeholder="Enter Username"><br>
-        <input type="password" id="password" placeholder="Enter Password"><br>
+        <input type="text" id="username" class="input-field" placeholder="Enter Username"><br>
+        <input type="password" id="password" class="input-field" placeholder="Enter Password"><br>
         <button class="button" onclick="loginUser()">Login</button>
     </div>
 
     <div class="container" id="accountDetails" style="display: none;">
-        <button class="personal-details" onclick="showDetails()">Personal Details</button>
-        <button class="buy-ticket" onclick="buyTicket()">Buy Ticket</button>
         <h1>Welcome, <span id="displayUsername"></span></h1>
-        <button class="button" onclick="logoutUser()">Logout</button>
         <div class="ticket-container">
             <div class="ticket">
                 <h2>Lucky Draw Ticket</h2>
                 <p>Participant: <span id="ticketUsername"></span></p>
                 <p>Ticket Number: <span id="ticketNumber"></span></p>
                 <p>Final Draw: 10 April</p>
-                <p>Good Luck!</p>
-                <div class="qr-container">
-                    <img src="tikt.jpg" alt="QR Code">
-                    <p>Scan code, final will be streamed on TikTok</p>
-                </div>
             </div>
             <div class="ticket free-ticket">
                 <h2>Free Ticket</h2>
                 <p>Participant: <span id="freeTicketUsername"></span></p>
                 <p>Ticket Number: <span id="freeTicketNumber"></span></p>
                 <p>Final Draw: 10 April</p>
-                <p>Good Luck!</p>
-                <div class="qr-container">
-                    <img src="tikt.jpg" alt="QR Code">
-                    <p>Scan code, final will be streamed on TikTok</p>
-                </div>
             </div>
         </div>
-        <div class="footer">ASELLPREMIUM</div>
+        <button class="button" onclick="logoutUser()">Logout</button>
     </div>
-    
+
     <script>
+        function generateTicketNumber() {
+            return Math.floor(100000 + Math.random() * 900000);
+        }
+
         function loginUser() {
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            let validUser = users.find(user => user.username === username && user.password === password);
+            
+            if (!validUser) {
+                alert("Invalid username or password!");
+                return;
+            }
+
+            localStorage.setItem("loggedInUser", username);
+
+            if (!localStorage.getItem("ticketNumber")) {
+                localStorage.setItem("ticketNumber", generateTicketNumber());
+            }
+
+            document.getElementById("displayUsername").textContent = username;
+            document.getElementById("ticketUsername").textContent = username;
+            document.getElementById("freeTicketUsername").textContent = username;
+
+            document.getElementById("ticketNumber").textContent = localStorage.getItem("ticketNumber");
+            document.getElementById("freeTicketNumber").textContent = localStorage.getItem("ticketNumber");
+
             document.getElementById("loginContainer").style.display = "none";
             document.getElementById("accountDetails").style.display = "block";
         }
 
         function logoutUser() {
-            document.getElementById("accountDetails").style.display = "none";
+            localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("ticketNumber");
             document.getElementById("loginContainer").style.display = "block";
+            document.getElementById("accountDetails").style.display = "none";
         }
+
+        function checkUserSession() {
+            let loggedInUser = localStorage.getItem("loggedInUser");
+            let ticketNumber = localStorage.getItem("ticketNumber");
+
+            if (loggedInUser) {
+                document.getElementById("displayUsername").textContent = loggedInUser;
+                document.getElementById("ticketUsername").textContent = loggedInUser;
+                document.getElementById("freeTicketUsername").textContent = loggedInUser;
+
+                document.getElementById("ticketNumber").textContent = ticketNumber;
+                document.getElementById("freeTicketNumber").textContent = ticketNumber;
+
+                document.getElementById("loginContainer").style.display = "none";
+                document.getElementById("accountDetails").style.display = "block";
+            }
+        }
+
+        window.onload = checkUserSession;
     </script>
 </body>
 </html>
