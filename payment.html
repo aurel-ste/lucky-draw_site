@@ -64,7 +64,7 @@
             let paymentMethod = document.getElementById("paymentMethod").value;
             let pricePerTicket = quantity <= 5 ? 100 : 150;
             let totalCost = quantity * pricePerTicket;
-            
+
             if (quantity < 1) {
                 alert("Please select at least 1 ticket.");
                 return;
@@ -72,23 +72,19 @@
 
             let ticketNumber = "T" + Math.floor(1000 + Math.random() * 9000);
             let paymentRequest = {
-                name: "User",
+                user: "User",
                 ticketNumber: ticketNumber,
                 status: "Pending",
                 totalCost: totalCost,
                 paymentMethod: paymentMethod
             };
 
+            // Simulate an API call by storing the payment request in localStorage
             let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
             paymentRequests.push(paymentRequest);
             localStorage.setItem("paymentRequests", JSON.stringify(paymentRequests));
 
             alert(`Your payment request for ${quantity} ticket(s) costing Rs ${totalCost} is pending admin approval.`);
-            
-            if (paymentMethod === "juice") {
-                let whatsappLink = `http://wa.me/23054516025?text=Payment Request: %0AUser: User%0ATicket Number: ${ticketNumber}%0ATotal Cost: Rs ${totalCost}%0APayment Method: Juice`;
-                window.location.href = whatsappLink;
-            }
         }
 
         function updateTicketPrice() {
