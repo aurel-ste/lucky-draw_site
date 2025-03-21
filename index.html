@@ -62,17 +62,27 @@
     
     <div id="registerForm" class="container hidden">
         <h2>Register</h2>
+        <label for="registerUsername">Username:</label>
         <input type="text" id="registerUsername" class="input-field" placeholder="Enter Username" required>
+        
+        <label for="registerEmail">Email:</label>
         <input type="email" id="registerEmail" class="input-field" placeholder="Enter Email" required>
+        
+        <label for="registerPassword">Password:</label>
         <input type="password" id="registerPassword" class="input-field" placeholder="Enter Password" required>
+        
         <button class="button" onclick="registerUser()">Register</button>
         <p>Already have an account? <a href="#" onclick="showLoginForm()">Login</a></p>
     </div>
     
     <div id="loginForm" class="container hidden">
         <h2>Login</h2>
+        <label for="loginUsername">Username:</label>
         <input type="text" id="loginUsername" class="input-field" placeholder="Enter Username" required>
+        
+        <label for="loginPassword">Password:</label>
         <input type="password" id="loginPassword" class="input-field" placeholder="Enter Password" required>
+        
         <button class="button" onclick="loginUser()">Login</button>
         <p>Don't have an account? <a href="#" onclick="showRegisterForm()">Register</a></p>
     </div>
@@ -134,5 +144,6 @@
     </script>
 </body>
 </html>
+
 
 
