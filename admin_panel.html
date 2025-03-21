@@ -6,196 +6,184 @@
     <title>Admin Panel</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
+            background-color: #f4f4f4;
+            padding: 20px;
         }
         .container {
-            background-color: white;
+            background: white;
             padding: 20px;
-            border: 2px solid black;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 80%;
         }
-        h1 {
-            color: blue;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid black;
-        }
-        th, td {
+        .input-field {
+            margin: 10px 0;
             padding: 10px;
-            text-align: center;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         .button {
-            background-color: green;
+            background-color: blue;
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 50px;
+            border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
-            margin: 10px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            transition: 0.3s;
         }
         .button:hover {
-            background-color: darkgreen;
-            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
+            background-color: darkblue;
         }
-        .search-bar, .add-participant {
-            margin: 10px;
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Panel</h1>
-        <input type="text" id="searchInput" class="search-bar" placeholder="Search by Name or Ticket Number" onkeyup="searchParticipants()">
-        <div class="add-participant">
-            <input type="text" id="newName" placeholder="Enter Name">
-            <button class="button" onclick="addParticipant()">Add Participant</button>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Participant Name</th>
-                    <th>Ticket Number</th>
-                    <th>Payment Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="participantTable">
-                <!-- Participants will be dynamically added here -->
-            </tbody>
-        </table>
-    </div>
+    <h1>Admin Panel</h1>
+    
+    <h2>Registered Users</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+    </table>
+
+    <h2>User Accounts</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="userTable"></tbody>
+    </table>
+
+    <h2>Payment Requests</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="paymentTable"></tbody>
+    </table>
+
     <script>
-        let participants = JSON.parse(localStorage.getItem("participants")) || [
-            { name: "John Doe", ticketNumber: "A001", status: "Pending" },
-            { name: "Jane Smith", ticketNumber: "A002", status: "Pending" },
-            { name: "Alice Johnson", ticketNumber: "A003", status: "Pending" }
-        ];
+        function loadRegisteredUsers() {
+            let users = JSON.parse(localStorage.getItem("registeredUsers")) || [];
+            let tableBody = document.getElementById("userTableBody");
 
-        function generateTicketNumber() {
-            return "T" + Math.floor(1000 + Math.random() * 9000);
-        }
-
-        function loadParticipants() {
-            let tableBody = document.getElementById("participantTable");
             tableBody.innerHTML = "";
-            participants.forEach((participant, index) => {
-                let row = `<tr>
-                    <td>${participant.name}</td>
-                    <td>${participant.ticketNumber}</td>
-                    <td id="status-${index}">${participant.status}</td>
-                    <td>
-                        <button class="button" onclick="confirmPayment(${index})">Confirm Payment</button>
-                        <button class="button" onclick="removeParticipant(${index})">Remove</button>
-                    </td>
-                </tr>`;
+            users.forEach(user => {
+                let row = `<tr><td>${user.username}</td><td>${user.email}</td></tr>`;
                 tableBody.innerHTML += row;
             });
-            localStorage.setItem("participants", JSON.stringify(participants));
         }
 
-        function confirmPayment(index) {
-            participants[index].status = "Paid";
-            document.getElementById(`status-${index}`).innerText = "Paid";
-            alert(`${participants[index].name}'s payment confirmed. Ticket is now valid.`);
-            localStorage.setItem("participants", JSON.stringify(participants));
-            window.location.href = "admin_panel.html"; // Redirect participant to admin panel
-        }
-
-        function addParticipant() {
-            let name = document.getElementById("newName").value;
-            let ticketNumber = generateTicketNumber();
-            if (name) {
-                participants.push({ name, ticketNumber, status: "Pending" });
-                loadParticipants();
-                document.getElementById("newName").value = "";
-            } else {
-                alert("Please enter a name.");
+        function createUser() {
+            let name = document.getElementById("userName").value;
+            let email = document.getElementById("userEmail").value;
+            let password = document.getElementById("userPassword").value;
+            
+            if (!name || !email || !password) {
+                alert("All fields are required!");
+                return;
             }
+
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            users.push({ name, email, password });
+            localStorage.setItem("users", JSON.stringify(users));
+
+            alert("User account created successfully!");
+            loadUsers();
         }
 
-        function removeParticipant(index) {
-            if (confirm("Are you sure you want to remove this participant?")) {
-                participants.splice(index, 1);
-                loadParticipants();
-            }
-        }
-
-        function searchParticipants() {
-            let searchValue = document.getElementById("searchInput").value.toLowerCase();
-            let filteredParticipants = participants.filter(p =>
-                p.name.toLowerCase().includes(searchValue) || p.ticketNumber.toLowerCase().includes(searchValue)
-            );
-            let tableBody = document.getElementById("participantTable");
+        function loadUsers() {
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            let tableBody = document.getElementById("userTable");
             tableBody.innerHTML = "";
-            filteredParticipants.forEach((participant, index) => {
+            users.forEach((user, index) => {
                 let row = `<tr>
-                    <td>${participant.name}</td>
-                    <td>${participant.ticketNumber}</td>
-                    <td>${participant.status}</td>
-                    <td>
-                        <button class="button" onclick="confirmPayment(${index})">Confirm Payment</button>
-                        <button class="button" onclick="removeParticipant(${index})">Remove</button>
-                    </td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td><button class="button" onclick="deleteUser(${index})">Delete</button></td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
         }
 
-        function loadPaymentRequests() {
-            let tableBody = document.getElementById("paymentRequests");
-            tableBody.innerHTML = "";
+        function deleteUser(index) {
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            users.splice(index, 1);
+            localStorage.setItem("users", JSON.stringify(users));
+            loadUsers();
+        }
 
-            let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
-            paymentRequests.forEach((request, index) => {
+        function loadPayments() {
+            let payments = JSON.parse(localStorage.getItem("payments")) || [];
+            let paymentTable = document.getElementById("paymentTable");
+            paymentTable.innerHTML = "";
+            payments.forEach((payment, index) => {
                 let row = `<tr>
-                    <td>${request.name}</td>
-                    <td>${request.ticketNumber}</td>
-                    <td id="status-${index}">${request.status}</td>
+                    <td>${payment.user}</td>
+                    <td>$${payment.amount}</td>
                     <td>
-                        <button class="button" onclick="confirmPayment(${index})">Confirm Payment</button>
-                        <button class="button" onclick="removeRequest(${index})">Remove</button>
+                        <button class="button" onclick="approvePayment(${index})">Approve</button>
+                        <button class="button" onclick="rejectPayment(${index})" style="background:red;">Reject</button>
                     </td>
                 </tr>`;
-                tableBody.innerHTML += row;
+                paymentTable.innerHTML += row;
             });
         }
 
-        function confirmPayment(index) {
-            let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
-            paymentRequests[index].status = "Paid";
-            localStorage.setItem("paymentRequests", JSON.stringify(paymentRequests));
-            loadPaymentRequests();
-            alert(`${paymentRequests[index].name}'s payment confirmed.`);
+        function approvePayment(index) {
+            let payments = JSON.parse(localStorage.getItem("payments")) || [];
+            alert(`Payment from ${payments[index].user} approved!`);
+            payments.splice(index, 1);
+            localStorage.setItem("payments", JSON.stringify(payments));
+            loadPayments();
         }
 
-        function removeRequest(index) {
-            if (confirm("Are you sure you want to remove this request?")) {
-                let paymentRequests = JSON.parse(localStorage.getItem("paymentRequests")) || [];
-                paymentRequests.splice(index, 1);
-                localStorage.setItem("paymentRequests", JSON.stringify(paymentRequests));
-                loadPaymentRequests();
-            }
+        function rejectPayment(index) {
+            let payments = JSON.parse(localStorage.getItem("payments")) || [];
+            alert(`Payment from ${payments[index].user} rejected.`);
+            payments.splice(index, 1);
+            localStorage.setItem("payments", JSON.stringify(payments));
+            loadPayments();
         }
 
-        window.onload = loadPaymentRequests;
+        window.onload = function() {
+            loadRegisteredUsers();
+            loadUsers();
+            loadPayments();
+        }
     </script>
 </body>
 </html>
