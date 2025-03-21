@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Draw - Win Big!</title>
+    <title>Home Page - Win Big!</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,50 +100,43 @@
             document.getElementById("loginForm").classList.remove("hidden");
         }
 
-        async function registerUser() {
+        function registerUser() {
             let username = document.getElementById("registerUsername").value;
             let email = document.getElementById("registerEmail").value;
             let password = document.getElementById("registerPassword").value;
 
             if (username && email && password) {
-                let response = await fetch("/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ username, email, password })
-                });
-
-                let result = await response.json();
-                if (result.success) {
-                    alert("Registration Successful! Redirecting to Buy Ticket Page...");
-                    window.location.href = "buy_ticket.html";
-                } 
-                
+                // Store registration info in localStorage (simple example, real-world apps would be more secure)
+                localStorage.setItem('userLoggedIn', true);
+                localStorage.setItem('username', username);
+                alert("Registration Successful! Redirecting to Buy Ticket Page...");
+                window.location.href = "buy_ticket.html"; // Redirect to buy ticket page after registration
             } else {
                 alert("Please fill in all fields.");
             }
         }
 
-        async function loginUser() {
+        function loginUser() {
             let username = document.getElementById("loginUsername").value;
             let password = document.getElementById("loginPassword").value;
             
-            let response = await fetch("/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
-            });
-            
-            let result = await response.json();
-            if (result.success) {
-                alert("Login Successful! Redirecting to Buy Ticket page...");
-                window.location.href = "buy_ticket.html";
-            } else {
-                alert("Invalid credentials. Please try again.");
-            }
+            // A simple admin check (this should be handled more securely on the backend in a real-world app)
+            if (username === "ADMIN" && password === "Aurelien@$10") {
+                alert("Admin Login Successful! Redirecting to Admin Panel...");
+                window.location.href = "admin_panel.html";
+                return;
+            } 
+
+            // If login is successful, store login info
+            localStorage.setItem('userLoggedIn', true);
+            localStorage.setItem('username', username);
+            alert("Login Successful! Redirecting to Buy Ticket Page...");
+            window.location.href = "buy_ticket.html"; // Redirect to buy ticket page after login
         }
     </script>
 </body>
 </html>
+
 
 
 
