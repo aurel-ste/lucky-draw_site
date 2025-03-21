@@ -3,74 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WELCOME TO LUCKY DRAW</title>
+    <title>Lucky Draw - Win Big!</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; margin-top: 50px; }
-        h1 { color: blue; }
-        .container { margin-top: 50px; padding: 20px; border: 2px solid black; display: inline-block; }
-        .input-field { display: block; margin: 10px auto; padding: 10px; width: 80%; }
-        .button { padding: 10px 20px; background: blue; color: white; border: none; cursor: pointer; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 300px;
+            margin-top: 20px;
+        }
+        h1 {
+            color: #007bff;
+        }
+        .button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .input-field {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <h1>WELCOME TO LUCKY DRAW</h1>
-    <p>Choose an option to proceed:</p>
+    <h1>Welcome to the Lucky Draw!</h1>
+    <p>Enter for a chance to win a Nintendo Switch OLED!</p>
     
-    <button class="button" onclick="showRegisterForm()">Register</button>
-    <button class="button" onclick="showLoginForm()">Login</button>
+    <div id="authOptions" class="container">
+        <button class="button" onclick="showRegisterForm()">Register</button>
+        <button class="button" onclick="showLoginForm()">Login</button>
+    </div>
     
-    <div id="registerForm" class="container" style="display: none;">
-        <h1>Register</h1>
-        <input type="text" id="registerUsername" class="input-field" placeholder="Enter Username">
-        <input type="password" id="registerPassword" class="input-field" placeholder="Enter Password">
+    <div id="registerForm" class="container hidden">
+        <h2>Register</h2>
+        <input type="text" id="registerUsername" class="input-field" placeholder="Enter Username" required>
+        <input type="email" id="registerEmail" class="input-field" placeholder="Enter Email" required>
+        <input type="password" id="registerPassword" class="input-field" placeholder="Enter Password" required>
         <button class="button" onclick="registerUser()">Register</button>
+        <p>Already have an account? <a href="#" onclick="showLoginForm()">Login</a></p>
     </div>
-
-    <div id="loginForm" class="container" style="display: none;">
-        <h1>Login</h1>
-        <input type="text" id="loginUsername" class="input-field" placeholder="Enter Username">
-        <input type="password" id="loginPassword" class="input-field" placeholder="Enter Password">
+    
+    <div id="loginForm" class="container hidden">
+        <h2>Login</h2>
+        <input type="text" id="loginUsername" class="input-field" placeholder="Enter Username" required>
+        <input type="password" id="loginPassword" class="input-field" placeholder="Enter Password" required>
         <button class="button" onclick="loginUser()">Login</button>
+        <p>Don't have an account? <a href="#" onclick="showRegisterForm()">Register</a></p>
     </div>
-
+    
     <script>
-        let isAuthenticated = false;
-
         function showRegisterForm() {
-            document.getElementById("registerForm").style.display = "block";
-            document.getElementById("loginForm").style.display = "none";
+            document.getElementById("authOptions").classList.add("hidden");
+            document.getElementById("registerForm").classList.remove("hidden");
+            document.getElementById("loginForm").classList.add("hidden");
         }
 
         function showLoginForm() {
-            document.getElementById("registerForm").style.display = "none";
-            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("authOptions").classList.add("hidden");
+            document.getElementById("registerForm").classList.add("hidden");
+            document.getElementById("loginForm").classList.remove("hidden");
         }
 
-        function registerUser() {
+        async function registerUser() {
             let username = document.getElementById("registerUsername").value;
+            let email = document.getElementById("registerEmail").value;
             let password = document.getElementById("registerPassword").value;
 
-            if (username && password) {
-                localStorage.setItem("registeredUsername", username);
-                localStorage.setItem("registeredPassword", password);
-                alert("Registration Successful! Now log in.");
-                showLoginForm();
+            if (username && email && password) {
+                let response = await fetch("/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                let result = await response.json();
+                if (result.success) {
+                    alert("Registration Successful! Redirecting to Buy Ticket Page...");
+                    window.location.href = "buy_ticket.html";
+                } 
+                
             } else {
                 alert("Please fill in all fields.");
             }
         }
 
-        function loginUser() {
+        async function loginUser() {
             let username = document.getElementById("loginUsername").value;
             let password = document.getElementById("loginPassword").value;
-            let storedUsername = localStorage.getItem("registeredUsername");
-            let storedPassword = localStorage.getItem("registeredPassword");
-
-            if (username === "ADMIN" && password === "Aurelien@$10") {
-                alert("Admin Login Successful! Redirecting to admin panel.");
-                window.location.href = "admin_panel.html";
-            } else if (username === storedUsername && password === storedPassword) {
-                alert("Login Successful! Redirecting to buy ticket page.");
+            
+            let response = await fetch("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password })
+            });
+            
+            let result = await response.json();
+            if (result.success) {
+                alert("Login Successful! Redirecting to Buy Ticket page...");
                 window.location.href = "buy_ticket.html";
             } else {
                 alert("Invalid credentials. Please try again.");
@@ -79,4 +134,5 @@
     </script>
 </body>
 </html>
+
 
