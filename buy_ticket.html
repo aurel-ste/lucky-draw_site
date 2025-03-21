@@ -3,55 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buy Ticket</title>
+    <title>Buy Ticket Page - Lucky Draw</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             text-align: center;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
         .container {
-            background-color: white;
-            padding: 20px;
-            border: 2px solid black;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+            width: 320px;
+            text-align: center;
         }
         h1 {
-            color: green;
-            margin-bottom: 10px;
-        }
-        h2 {
-            color: black;
-            margin-bottom: 20px;
+            color: #007bff;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
         .button {
-            background-color: blue;
-            color: white;
+            padding: 14px 24px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 16px;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            font-size: 18px;
             cursor: pointer;
-            margin: 20px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            margin: 10px 0;
+            transition: 0.3s ease-in-out;
+            width: 100%;
         }
         .button:hover {
-            background-color: darkblue;
-            box-shadow: 3px 3px 7px rgba(0, 0, 0, 0.3);
+            background: #0056b3;
         }
         .prize-image {
-            width: 300px;
+            width: 250px;
             height: auto;
-            margin-bottom: 20px;
+            margin: 20px 0;
             border-radius: 10px;
             box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
         }
@@ -67,11 +64,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>GOOD LUCK</h1>
-        <h2>Win the Nintendo Switch OLED</h2>
+        <h1>Good Luck!</h1>
+        <h2>Win a Nintendo Switch OLED</h2>
         <img src="https://image.pngaaa.com/885/6274885-middle.png" alt="Nintendo Switch OLED" class="prize-image">
         <button class="button" onclick="redirectToPayment()">Buy Ticket</button>
         <div id="finalDrawDate" style="font-size: 20px; font-weight: bold; margin-top: 20px; color: red;">Final Draw: 10 April</div>
     </div>
+    <button onclick="window.location.href='buy_ticket.html'">Register</button>
 </body>
 </html>
+
+
