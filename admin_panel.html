@@ -19,13 +19,6 @@
             display: inline-block;
             width: 80%;
         }
-        .input-field {
-            margin: 10px 0;
-            padding: 10px;
-            width: 80%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
         .button {
             background-color: blue;
             color: white;
@@ -66,17 +59,6 @@
             <tr>
                 <th>Username</th>
                 <th>Email</th>
-            </tr>
-        </thead>
-        <tbody id="userTableBody"></tbody>
-    </table>
-
-    <h2>User Accounts</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -96,42 +78,13 @@
     </table>
 
     <script>
-        function loadRegisteredUsers() {
-            let users = JSON.parse(localStorage.getItem("registeredUsers")) || [];
-            let tableBody = document.getElementById("userTableBody");
-
-            tableBody.innerHTML = "";
-            users.forEach(user => {
-                let row = `<tr><td>${user.username}</td><td>${user.email}</td></tr>`;
-                tableBody.innerHTML += row;
-            });
-        }
-
-        function createUser() {
-            let name = document.getElementById("userName").value;
-            let email = document.getElementById("userEmail").value;
-            let password = document.getElementById("userPassword").value;
-            
-            if (!name || !email || !password) {
-                alert("All fields are required!");
-                return;
-            }
-
-            let users = JSON.parse(localStorage.getItem("users")) || [];
-            users.push({ name, email, password });
-            localStorage.setItem("users", JSON.stringify(users));
-
-            alert("User account created successfully!");
-            loadUsers();
-        }
-
         function loadUsers() {
-            let users = JSON.parse(localStorage.getItem("users")) || [];
+            let users = JSON.parse(localStorage.getItem("registeredUsers")) || [];
             let tableBody = document.getElementById("userTable");
             tableBody.innerHTML = "";
             users.forEach((user, index) => {
                 let row = `<tr>
-                    <td>${user.name}</td>
+                    <td>${user.username}</td>
                     <td>${user.email}</td>
                     <td><button class="button" onclick="deleteUser(${index})">Delete</button></td>
                 </tr>`;
@@ -140,9 +93,9 @@
         }
 
         function deleteUser(index) {
-            let users = JSON.parse(localStorage.getItem("users")) || [];
+            let users = JSON.parse(localStorage.getItem("registeredUsers")) || [];
             users.splice(index, 1);
-            localStorage.setItem("users", JSON.stringify(users));
+            localStorage.setItem("registeredUsers", JSON.stringify(users));
             loadUsers();
         }
 
@@ -155,10 +108,13 @@
                 let row = `<tr>
                     <td>${payment.user}</td>
                     <td>Rs ${payment.totalCost}</td>
+                    </td>${payment.status}</td> <!-- Status Column Added -->
                     <td>
+                         ${payment.status === "Pending" ? `
                         <button class="button" onclick="approvePayment(${index})">Approve</button>
                         <button class="button" onclick="rejectPayment(${index})" style="background:red;">Reject</button>
-                    </td>
+                    ` : "Processed"}
+                        </td>
                 </tr>`;
                 paymentTable.innerHTML += row;
             });
@@ -167,7 +123,7 @@
         function approvePayment(index) {
             let payments = JSON.parse(localStorage.getItem("paymentRequests")) || [];
             alert(`Payment from ${payments[index].user} approved!`);
-            payments[index].status = "Approved";  // Mark as approved
+            payments[index].status = "Approved";
             localStorage.setItem("paymentRequests", JSON.stringify(payments));
             loadPayments();
         }
@@ -175,16 +131,17 @@
         function rejectPayment(index) {
             let payments = JSON.parse(localStorage.getItem("paymentRequests")) || [];
             alert(`Payment from ${payments[index].user} rejected.`);
-            payments[index].status = "Rejected";  // Mark as rejected
+            payments[index].status = "Rejected";
             localStorage.setItem("paymentRequests", JSON.stringify(payments));
             loadPayments();
         }
 
         window.onload = function() {
-            loadRegisteredUsers();
             loadUsers();
             loadPayments();
         }
     </script>
 </body>
 </html>
+
+
